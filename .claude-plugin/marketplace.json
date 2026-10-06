@@ -1,0 +1,32 @@
+{
+  "name": "shabash-skill-check",
+  "description": "A free security scan for your Claude Code and Codex skills and plugins, from Shabash.",
+  "owner": {
+    "name": "Shabash",
+    "url": "https://shabash.dev"
+  },
+  "plugins": [
+    {
+      "name": "shabash-skill-check",
+      "source": "./",
+      "description": "Security scanner for Claude Code and Codex skills, plugins, hooks and MCP servers: finds hidden HTML instructions, invisible characters, commands that run by themselves, data sent out with curl, .env and keys read, prompt injection and unpinned npx packages. Reads only; nothing goes to Shabash.",
+      "category": "security",
+      "tags": [
+        "security",
+        "skill scanner",
+        "security scan",
+        "plugin security",
+        "prompt injection",
+        "malicious skills",
+        "hooks",
+        "MCP security",
+        "audit",
+        "supply chain",
+        "hidden instructions",
+        "is this skill safe",
+        "claude code",
+        "codex"
+      ]
+    }
+  ]
+}
