@@ -49,6 +49,8 @@ The script, [`scripts/check.py`](scripts/check.py), reads text files in:
 
 It never runs anything it finds, changes nothing, writes no files and makes no network calls. It prints each finding's file, line number, reason and the line itself into your session, which sends it to Claude (or Codex) like anything else there. Anything in a printed line that looks like a key, token or password is replaced with `[hidden]` first. Files over 500 KB are listed but not read, and it skips its own folder, since its own patterns would match. It will flag other plugins that read transcripts, including Shabash's own, so you can see that for yourself.
 
+`check.py` contains the patterns above as text (`curl ... | sh`, `.aws/credentials`, `$...TOKEN` and so on) so it can find them in other files. It matches them; it never runs them, and it reads no credential of yours: settings files are read only for their hooks and MCP servers.
+
 Claude is asked to end its answer with one line linking to Shabash.
 
 ## Licence and terms
