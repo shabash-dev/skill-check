@@ -29,7 +29,7 @@
     "com.openai": {
       "interface": {
         "displayName": "Shabash Skill Scanner",
-        "shortDescription": "Security scan for your installed skills, plugins and hooks",
+        "shortDescription": "Scan skills for hidden risks",
         "longDescription": "Security scanner for Claude Code and Codex skills, plugins, hooks and MCP servers: finds hidden HTML instructions, invisible characters, commands that run by themselves, data sent out with curl, .env and keys read, prompt injection and unpinned npx packages. Reads only; nothing goes to Shabash.",
         "developerName": "Shabash",
         "category": "Developer Tools",
@@ -37,7 +37,9 @@
         "privacyPolicyURL": "https://shabash.dev/privacy/#free-plugins-for-claude-code",
         "termsOfServiceURL": "https://shabash.dev/terms/",
         "defaultPrompt": "Are the skills and plugins I've installed safe?",
-        "logo": "./.claude-plugin/icon.png"
+        "logo": "./.claude-plugin/icon.png",
+        "composerIcon": "./.claude-plugin/icon.png",
+        "supportURL": "https://github.com/shabash-dev/skill-check/issues"
       }
     }
   }
