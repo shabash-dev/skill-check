@@ -51,7 +51,7 @@ SECRET = re.compile(r"((?:bearer|basic)\s+|--(?:token|api-key|apikey|password|se
                     r"://[^\s/:@]+:)[^\s\"'&@,]{4,}|(sk-[A-Za-z0-9_-]{16,}|gh[pousr]_[A-Za-z0-9]{20,}|github_pat_\w{20,}|AKIA[0-9A-Z]{16}|xox[abposr]-[\w-]{10,}|"
                     r"AIza[\w-]{30,}|eyJ[\w-]{20,}\.[\w-]{10,}|\b[0-9a-f]{32,}\b|"
                     r"((token|secret|password|api[_-]?key|authorization)[\"']?\s*[:=]\s*[\"']?(?:bearer\s+|basic\s+)?)[^\s\"',]{6,})", re.I)
-CONFIG = ("settings.json", "settings.local.json", ".mcp.json", "hooks.json")
+CONFIG = ("settings.json", "settings.local.json", ".mcp.json", "hooks.json", ".claude.json")
 
 
 def redact(s):
@@ -75,7 +75,8 @@ def places(project, codex):
     claude = os.path.join(HOME, ".claude")
     out = [("your skills", os.path.join(claude, "skills")), ("your commands", os.path.join(claude, "commands")),
            ("your agents", os.path.join(claude, "agents")), ("installed plugins", os.path.join(claude, "plugins", "cache")),
-           ("your Claude Code settings", os.path.join(claude, "settings.json"))]
+           ("your Claude Code settings", os.path.join(claude, "settings.json")),
+           ("MCP servers added with claude mcp add", os.path.join(HOME, ".claude.json"))]
     if project:
         p = os.path.abspath(project)
         out += [("this project's skills", os.path.join(p, ".claude", "skills")),
@@ -127,12 +128,18 @@ def hooks_and_servers(path):
         return []
     out = []
     hooks = data.get("hooks") if isinstance(data.get("hooks"), dict) else {}
+    if os.path.basename(path) == ".claude.json":
+        hooks = {}  # that file is read for its MCP servers only
     for event, groups in hooks.items():
         for g in groups if isinstance(groups, list) else []:
             for h in (g.get("hooks") if isinstance(g, dict) else None) or []:
                 if isinstance(h, dict):
                     out.append((f"hook on {event}, runs by itself", h.get("command") or h.get("url") or json.dumps(h)))
-    servers = data.get("mcpServers") if isinstance(data.get("mcpServers"), dict) else {}
+    servers = dict(data.get("mcpServers") if isinstance(data.get("mcpServers"), dict) else {})
+    projects = data.get("projects") if isinstance(data.get("projects"), dict) else {}  # ~/.claude.json: per-folder servers
+    for folder, proj in projects.items():
+        for name, s in ((proj or {}).get("mcpServers") or {}).items() if isinstance(proj, dict) else []:
+            servers[f"{name} (for {folder})"] = s
     for name, s in servers.items():
         if isinstance(s, dict):
             args = [str(a) for a in s.get("args") or [] if isinstance(s.get("args"), list)]
@@ -159,7 +166,7 @@ def main():
         lines = []
         for f in paths:
             try:
-                if os.path.getsize(f) > MAX_BYTES:
+                if os.path.getsize(f) > MAX_BYTES and os.path.basename(f) not in CONFIG:  # settings are parsed, not scanned
                     lines.append(f"- {f}: over {MAX_BYTES // 1000} KB, not read")
                     continue
                 with open(f, errors="ignore") as fh:
